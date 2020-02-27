@@ -14,25 +14,40 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
     
+    var mapAction = false
+    
+    @IBOutlet var mapButton: UIButton!
+    
     override func viewDidLoad() {
+        
         super.viewDidLoad()
         
-        // Set the view's delegate
         sceneView.delegate = self
-        
-        // Show statistics such as fps and timing information
-//        sceneView.showsStatistics = true
-        
-        // Create a new scene
-        let scene = SCNScene(named: "art.scnassets/map.scn")!
-        
-        // Set the scene to the view
-        sceneView.scene = scene
         
         sceneView.autoenablesDefaultLighting = true
         
     }
     
+    @IBAction func showMap(_ sender: Any) {
+        
+        mapAction = !mapAction
+        
+        let scene = SCNScene(named: "art.scnassets/map.scn")
+                    
+        guard let node = scene?.rootNode.childNode(withName: "map", recursively: false) else { return }
+        
+        if mapAction {
+        
+            sceneView.scene.rootNode.addChildNode(node)
+                        
+        } else {
+            
+            sceneView.scene.rootNode.enumerateChildNodes { (node, _) in node.removeFromParentNode() }
+        }
+    }
+    
+        
+        
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
