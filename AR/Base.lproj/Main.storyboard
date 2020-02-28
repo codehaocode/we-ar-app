@@ -17,6 +17,10 @@
                         <subviews>
                             <arscnView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BrB-h1-WRS">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="862"/>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="565-b6-sDX" appends="YES" id="NC3-u8-BCe"/>
+                                </connections>
                             </arscnView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hd8-1L-asC">
                                 <rect key="frame" x="57" y="782" width="300" height="50"/>
@@ -37,6 +41,9 @@
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1dZ-ua-QAe">
                                                     <rect key="frame" x="96.5" y="0.0" width="87" height="22"/>
                                                     <state key="normal" image="gamecontroller" catalog="system"/>
+                                                    <connections>
+                                                        <action selector="playMode:" destination="BV1-FR-VrT" eventType="touchUpInside" id="9Sq-wD-bOH"/>
+                                                    </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pzg-MN-asS">
                                                     <rect key="frame" x="193.5" y="0.0" width="86.5" height="22"/>
@@ -72,10 +79,16 @@
                     </view>
                     <connections>
                         <outlet property="mapButton" destination="hJe-A7-Set" id="rEB-qU-xMv"/>
+                        <outlet property="playButton" destination="1dZ-ua-QAe" id="ZAI-yn-BKM"/>
                         <outlet property="sceneView" destination="BrB-h1-WRS" id="5nT-qQ-ynl"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="565-b6-sDX">
+                    <connections>
+                        <action selector="screenTapped:" destination="BV1-FR-VrT" id="fBf-fV-kKR"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="137.68115942028987" y="85.714285714285708"/>
         </scene>
