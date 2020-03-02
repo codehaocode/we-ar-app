@@ -16,11 +16,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     var mapAction = false
     var playAction = false
+    var settingAction = false
     var hoopAdded = false
+    
+    var placedArrows = [SCNNode]()
     
     
     @IBOutlet var mapButton: UIButton!
     @IBOutlet var playButton: UIButton!
+    @IBOutlet var settingButton: UIButton!
+    
     
     override func viewDidLoad() {
         
@@ -32,22 +37,33 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
     }
     
-    @IBAction func showMap(_ sender: Any) {
+    
+    @IBAction func showMap(_ sender: UIButton) {
         
-        mapAction = !mapAction
+        mapAction.toggle()
+        
+        if mapAction {
+            mapButton.backgroundColor = UIColor.black
+        } else {
+            mapButton.backgroundColor = .none
+        }
+        
         
         let scene = SCNScene(named: "art.scnassets/map.scn")
         
         guard let node = scene?.rootNode.childNode(withName: "map", recursively: false) else { return }
         
+        
         if mapAction {
             
-//            let rotate = simd_float4x4(SCNMatrix4MakeRotation(sceneView.session.currentFrame!.camera.eulerAngles.y, 0, 1, 0))
-            guard let frame = self.sceneView.session.currentFrame else { return }
+            //            let rotate = simd_float4x4(SCNMatrix4MakeRotation(sceneView.session.currentFrame!.camera.eulerAngles.y, 0, 1, 0))
+            guard let currentFrame = sceneView.session.currentFrame else { return }
             
-
-            print("Show Map")
-            node.eulerAngles.y = frame.camera.eulerAngles.y
+//            var translation = matrix_identity_float4x4
+//            translation.columns.3.z = -1
+//            translation.columns.3.y = -0.1
+//            node.simdTransform = matrix_multiply(currentFrame.camera.transform, translation)
+            node.eulerAngles.y = currentFrame.camera.eulerAngles.y
             sceneView.scene.rootNode.addChildNode(node)
             
         } else {
@@ -56,23 +72,40 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             print("Hide Map")
             
         }
+        
     }
     
-    @IBAction func playMode(_ sender: Any) {
+    @IBAction func playMode(_ sender: UIButton) {
         
-        playAction = !playAction
-        
+        playAction.toggle()
         if playAction {
-            print("It's time to play")
+            playButton.backgroundColor = UIColor.black
         } else {
-            sceneView.scene.rootNode.enumerateChildNodes { (node, _) in node.removeFromParentNode() }
-            hoopAdded = false
-            print("Game Over")
-            
-            
+            playButton.backgroundColor = .none
         }
         
+        guard playAction else {return}
+    
+        sceneView.scene.rootNode.enumerateChildNodes { (node, _) in node.removeFromParentNode() }
+        hoopAdded = false
+            
     }
+    
+    
+    
+    
+    @IBAction func settingMode(_ sender: UIButton) {
+        settingAction.toggle()
+        if settingAction {
+            settingButton.backgroundColor = UIColor.black
+        } else {
+            settingButton.backgroundColor = .none
+            for arrow in placedArrows {
+                arrow.opacity = 0
+            }
+        }
+    }
+    
     
     
     
@@ -108,11 +141,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             let touchLocation = sender.location(in: sceneView)
             let hitTestResult = sceneView.hitTest(touchLocation)
             if let result = hitTestResult.first {
-                //            addTouchEffect(result: <#T##ARHitTestResult#>, anchor: <#T##ARAnchor#>)
                 print(result)
                 startNavigation()
             }
         }
+        
+//        if settingAction {
+//            let touchLocation = sender.location(in: sceneView)
+//            let hitTestResult = sceneView.hitTest(touchLocation, types: .)
+//            addArrowInFront(<#T##node: SCNNode##SCNNode#>)
+//        }
         
         guard playAction else {return}
         
@@ -122,15 +160,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             if let result = hitTestResult.first, let planeAnchor = result.anchor as? ARPlaneAnchor {
                 addHoop(result: result, planeAnchor: planeAnchor)
                 hoopAdded = true
+                
             }
         }
         else { createBasketball()
             
         }
-        
-        
-        
     }
+    
+    
+    
     func createBasketball() {
         
         guard let currentFrame = sceneView.session.currentFrame else { return }
@@ -160,9 +199,37 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     
     func startNavigation() {
-        print("start navigation")
+        for arrow in placedArrows {
+            arrow.opacity = 0.8
+        }
+        
     }
     
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        
+        let scene = SCNScene(named: "art.scnassets/map.scn")
+        
+        guard settingAction, let node = scene?.rootNode.childNode(withName: "arrows", recursively: false) else { return }
+        addArrowInFront(node)
+    }
+    
+    func addArrowInFront(_ node: SCNNode) {
+        guard let currentFrame = sceneView.session.currentFrame else { return }
+        
+        var translation = matrix_identity_float4x4
+        translation.columns.3.z = -0.2
+        node.simdTransform = matrix_multiply(currentFrame.camera.transform, translation)
+        
+        addNodeToSceneRoot(node)
+    }
+    
+    func addNodeToSceneRoot(_ node: SCNNode) {
+        let cloneNode = node.clone()
+        sceneView.scene.rootNode.addChildNode(cloneNode)
+        placedArrows.append(cloneNode)
+    }
     
     func createWall(planeAnchor: ARPlaneAnchor) -> SCNNode{
         let node = SCNNode()
@@ -177,6 +244,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         return node
     }
+    
+
     
     
     
@@ -198,7 +267,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         hoopNode.physicsBody = SCNPhysicsBody(type: .static, shape: SCNPhysicsShape(node: hoopNode, options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.concavePolyhedron]))
         
         sceneView.scene.rootNode.addChildNode(hoopNode)
-
+        
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {

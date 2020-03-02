@@ -35,19 +35,22 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="86.5" height="22"/>
                                                     <state key="normal" image="map" catalog="system"/>
                                                     <connections>
-                                                        <action selector="showMap:" destination="BV1-FR-VrT" eventType="touchUpInside" id="qDL-BI-xan"/>
+                                                        <action selector="showMap:" destination="BV1-FR-VrT" eventType="touchUpInside" id="TMP-6p-JrM"/>
                                                     </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1dZ-ua-QAe">
                                                     <rect key="frame" x="96.5" y="0.0" width="87" height="22"/>
                                                     <state key="normal" image="gamecontroller" catalog="system"/>
                                                     <connections>
-                                                        <action selector="playMode:" destination="BV1-FR-VrT" eventType="touchUpInside" id="9Sq-wD-bOH"/>
+                                                        <action selector="playMode:" destination="BV1-FR-VrT" eventType="touchUpInside" id="h7B-6t-h4W"/>
                                                     </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pzg-MN-asS">
                                                     <rect key="frame" x="193.5" y="0.0" width="86.5" height="22"/>
-                                                    <state key="normal" image="person" catalog="system"/>
+                                                    <state key="normal" image="slider.horizontal.3" catalog="system"/>
+                                                    <connections>
+                                                        <action selector="settingMode:" destination="BV1-FR-VrT" eventType="touchUpInside" id="QvK-rC-5UD"/>
+                                                    </connections>
                                                 </button>
                                             </subviews>
                                         </stackView>
@@ -81,6 +84,7 @@
                         <outlet property="mapButton" destination="hJe-A7-Set" id="rEB-qU-xMv"/>
                         <outlet property="playButton" destination="1dZ-ua-QAe" id="ZAI-yn-BKM"/>
                         <outlet property="sceneView" destination="BrB-h1-WRS" id="5nT-qQ-ynl"/>
+                        <outlet property="settingButton" destination="pzg-MN-asS" id="K5e-qy-hGF"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
@@ -96,6 +100,6 @@
     <resources>
         <image name="gamecontroller" catalog="system" width="64" height="40"/>
         <image name="map" catalog="system" width="64" height="56"/>
-        <image name="person" catalog="system" width="64" height="58"/>
+        <image name="slider.horizontal.3" catalog="system" width="64" height="50"/>
     </resources>
 </document>
