@@ -1,0 +1,23 @@
+{
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "resources" : [
+    {
+      "filename" : "cognito.arreferenceimage"
+    },
+    {
+      "filename" : "echo.arreferenceimage"
+    },
+    {
+      "filename" : "keyboard.arreferenceimage"
+    },
+    {
+      "filename" : "scissors.arreferenceimage"
+    },
+    {
+      "filename" : "warp.arreferenceimage"
+    }
+  ]
+}

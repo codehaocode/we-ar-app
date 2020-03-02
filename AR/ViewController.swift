@@ -59,10 +59,10 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             //            let rotate = simd_float4x4(SCNMatrix4MakeRotation(sceneView.session.currentFrame!.camera.eulerAngles.y, 0, 1, 0))
             guard let currentFrame = sceneView.session.currentFrame else { return }
             
-//            var translation = matrix_identity_float4x4
-//            translation.columns.3.z = -1
-//            translation.columns.3.y = -0.1
-//            node.simdTransform = matrix_multiply(currentFrame.camera.transform, translation)
+            //            var translation = matrix_identity_float4x4
+            //            translation.columns.3.z = -1
+            //            translation.columns.3.y = -0.1
+            //            node.simdTransform = matrix_multiply(currentFrame.camera.transform, translation)
             node.eulerAngles.y = currentFrame.camera.eulerAngles.y
             sceneView.scene.rootNode.addChildNode(node)
             
@@ -85,10 +85,10 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         }
         
         guard playAction else {return}
-    
+        
         sceneView.scene.rootNode.enumerateChildNodes { (node, _) in node.removeFromParentNode() }
         hoopAdded = false
-            
+        
     }
     
     
@@ -118,7 +118,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             // Inform the user that the device is not supported for AR expierence
         }
         
+        let referenceImages = ARReferenceImage.referenceImages(inGroupNamed: "AR Resources", bundle: nil)
+        
         let configuration = ARWorldTrackingConfiguration()
+        
+        configuration.detectionImages = referenceImages
         
         configuration.planeDetection = [.horizontal, .vertical]
         sceneView.session.run(configuration)
@@ -146,11 +150,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             }
         }
         
-//        if settingAction {
-//            let touchLocation = sender.location(in: sceneView)
-//            let hitTestResult = sceneView.hitTest(touchLocation, types: .)
-//            addArrowInFront(<#T##node: SCNNode##SCNNode#>)
-//        }
+        //        if settingAction {
+        //            let touchLocation = sender.location(in: sceneView)
+        //            let hitTestResult = sceneView.hitTest(touchLocation, types: .)
+        //            addArrowInFront(<#T##node: SCNNode##SCNNode#>)
+        //        }
         
         guard playAction else {return}
         
@@ -245,7 +249,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         return node
     }
     
-
+    
     
     
     
@@ -270,11 +274,26 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
     }
     
+    
+    
+    
+    
+    
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-        guard playAction, !hoopAdded else {return}
-        guard let planeAnchor = anchor as? ARPlaneAnchor else {
-            return
+        switch anchor {
+        case let planeAnchor as ARPlaneAnchor:
+            planeNodeAdded(node, for: planeAnchor)
+        case let imageAnchor as ARImageAnchor:
+            imageNodeAdded(node, for: imageAnchor)
+        default:
+            print("A special anchor was discovered")
+            
         }
+    }
+    
+    
+    func planeNodeAdded(_ node: SCNNode, for planeAnchor: ARPlaneAnchor) {
+        guard playAction, !hoopAdded else {return}
         
         let wall = createWall(planeAnchor: planeAnchor)
         node.addChildNode(wall)
@@ -283,6 +302,54 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         print("find Wall")
         
     }
+    
+    func imageNodeAdded(_ node: SCNNode, for imageAnchor: ARImageAnchor) {
+        let referenceImage = imageAnchor.referenceImage
+        let plane = SCNPlane(width: referenceImage.physicalSize.width, height: referenceImage.physicalSize.height)
+        plane.firstMaterial?.diffuse.contents = UIColor.black
+        let planeNode = SCNNode(geometry: plane)
+        
+        //        planeNode.opacity = 0.8
+        planeNode.eulerAngles.x = -Float.pi / 2
+        node.addChildNode(planeNode)
+        
+        switch referenceImage.name {
+        case "cognito":
+            plane.firstMaterial?.diffuse.contents = UIColor.black
+            let infoScene = SCNScene(named: "art.scnassets/room.scn/")
+            let meetingRoomNode = infoScene?.rootNode.childNode(withName: "meetingRoom", recursively: false)
+            planeNode.addChildNode(meetingRoomNode!)
+            
+        case "warp":
+            plane.firstMaterial?.diffuse.contents = UIColor.black
+            let infoScene = SCNScene(named: "art.scnassets/room.scn/")
+            let meetingRoomNode = infoScene?.rootNode.childNode(withName: "meetingRoom", recursively: false)
+            planeNode.addChildNode(meetingRoomNode!)
+            
+        case "echo":
+            plane.firstMaterial?.diffuse.contents = UIColor.black
+            let infoScene = SCNScene(named: "art.scnassets/room.scn/")
+            let meetingRoomNode = infoScene?.rootNode.childNode(withName: "meetingRoom", recursively: false)
+            planeNode.addChildNode(meetingRoomNode!)
+            
+        case "scissors":
+            plane.firstMaterial?.diffuse.contents = UIColor.black
+            let infoScene = SCNScene(named: "art.scnassets/room.scn/")
+            let meetingRoomNode = infoScene?.rootNode.childNode(withName: "meetingRoom", recursively: false)
+            planeNode.addChildNode(meetingRoomNode!)
+            
+        case "keyboard":
+            plane.firstMaterial?.diffuse.contents = UIColor.black
+            let infoScene = SCNScene(named: "art.scnassets/room.scn/")
+            let meetingRoomNode = infoScene?.rootNode.childNode(withName: "meetingRoom", recursively: false)
+            planeNode.addChildNode(meetingRoomNode!)
+            
+        default:
+            print("No room info")
+        }
+        
+    }
+    
     
     var waitRemoveAction: SCNAction {
         return .sequence([.wait(duration: 2.0), .fadeOut(duration: 2.0), .removeFromParentNode()])
