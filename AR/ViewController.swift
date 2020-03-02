@@ -35,6 +35,20 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         sceneView.autoenablesDefaultLighting = true
         
+        // Create a new scene
+        let scene = SCNScene(named: "art.scnassets/welcome.scn")!
+        
+        
+        guard let welcomeNode = scene.rootNode.childNode(withName: "OHD", recursively: false) else { return }
+        
+        // Set the scene to the view
+        sceneView.scene = scene
+        
+        
+        
+        welcomeNode.runAction(SCNAction.rotateBy(x: 0, y: CGFloat(Float.pi*100), z: 0, duration: 300))
+        
+        
     }
     
     
@@ -213,9 +227,10 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         
-        let scene = SCNScene(named: "art.scnassets/map.scn")
+        let scene = SCNScene(named: "art.scnassets/arrows.scn")
         
-        guard settingAction, let node = scene?.rootNode.childNode(withName: "arrows", recursively: false) else { return }
+        guard settingAction, let node = scene?.rootNode.childNode(withName: "arrows", recursively: true) else { return }
+        
         addArrowInFront(node)
     }
     
@@ -225,7 +240,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         var translation = matrix_identity_float4x4
         translation.columns.3.z = -0.2
         node.simdTransform = matrix_multiply(currentFrame.camera.transform, translation)
-        
+        node.scale = SCNVector3(0.3, 0.3, 0.3)
         addNodeToSceneRoot(node)
     }
     
